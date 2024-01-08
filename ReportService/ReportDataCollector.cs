@@ -27,12 +27,25 @@ namespace ReportService
         {
             if(message.Contains("Product"))
             {
-
+                var product = JsonConvert.DeserializeObject<Product>(message);
+                if (memoryReportStorage.Get().Any(r => r.ProductName == product!.ProductName))
+                {
+                    return true;
+                }
+                else
+                {
+                    memoryReportStorage.Add(new Report
+                    {
+                        ProductName = product!.ProductName,
+                        Count = DEFAULT_QUANTITY,
+                    });
+                }
             }
             else
             {
-                var order = JsonConvert.DeserializeObject<Order>(message);    
-                if (memoryReportStorage.Get().Any(r => r.ProductName == order!.Name)) {
+                var order = JsonConvert.DeserializeObject<Order>(message);
+                if (memoryReportStorage.Get().Any(r => r.ProductName == order!.Name))
+                {
                     memoryReportStorage.Get().First(r => r.ProductName == order!.Name).Count -= order!.Quantity;
                 }
                 else
@@ -44,6 +57,7 @@ namespace ReportService
                     });
                 }
             }
+
             return true;
         }
 

@@ -1,3 +1,5 @@
+using OrderService.Services;
+using OrderService.Services.Interfaces;
 using Plain.RabbitMQ;
 using RabbitMQ.Client;
 
@@ -16,6 +18,8 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 });
+
+builder.Services.AddSingleton<IOrderDetailsProvider>(new OrderDetailsProvider("abc"));
 builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider(builder.Configuration.GetValue<string>("RabbitMQ:Url")));
 builder.Services.AddScoped<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(), "report_exchange", ExchangeType.Topic));
 
