@@ -1,9 +1,18 @@
+using OrderService;
 using OrderService.Services;
 using OrderService.Services.Interfaces;
 using Plain.RabbitMQ;
 using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Build a config object, using env vars and JSON providers.
+IConfigurationRoot config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
+    .Build();
+
+string connectionString = config.GetConnectionString("DefaultConnection")!;
 
 // Add services to the container.
 
@@ -19,9 +28,19 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddSingleton<IOrderDetailsProvider>(new OrderDetailsProvider("abc"));
+builder.Services.AddSingleton<IOrderDetailsProvider>(new OrderDetailsProvider(connectionString));
+builder.Services.AddSingleton<IOrderCreator>(x => new OrderCreator(connectionString, x.GetService<ILogger<OrderCreator>>()!));
+builder.Services.AddSingleton<IOrderDeletor>(new OrderDeletor(connectionString));
+
 builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider(builder.Configuration.GetValue<string>("RabbitMQ:Url")));
-builder.Services.AddScoped<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(), "report_exchange", ExchangeType.Topic));
+builder.Services.AddSingleton<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(),
+                    "order_exchange",
+                    ExchangeType.Topic));
+builder.Services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(),
+    "inventory_exchange",
+    "inventory_response",
+    "inventory.response",
+    ExchangeType.Topic));
 
 var app = builder.Build();
 

@@ -13,7 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ReportService", "ReportServ
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ecomm", "Ecomm", "{619394CE-7A49-4A46-8774-2C8A6B3F5F6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ecomm", "Ecomm\Ecomm.csproj", "{23C84E8D-B41F-46F2-AEA8-24A15126E44D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ecomm", "Ecomm\Ecomm.csproj", "{23C84E8D-B41F-46F2-AEA8-24A15126E44D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{518C7F68-86B4-47AB-94EB-3818C99D3F4B}"
+	ProjectSection(SolutionItems) = preProject
+		startup.sql = startup.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

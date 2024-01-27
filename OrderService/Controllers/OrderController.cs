@@ -14,10 +14,13 @@ namespace OrderService.Controllers
     {
         private readonly IOrderDetailsProvider orderDetailsProvider;
         private readonly IPublisher publisher;
-        public OrderController(IOrderDetailsProvider orderDetailsProvider, IPublisher publisher)
+        private readonly IOrderCreator orderCreator;
+
+        public OrderController(IOrderDetailsProvider orderDetailsProvider, IPublisher publisher, IOrderCreator orderCreator)
         {
             this.orderDetailsProvider = orderDetailsProvider;
             this.publisher = publisher;
+            this.orderCreator = orderCreator;
         }
         // GET: api/<OrderController>
         [HttpGet]
@@ -35,10 +38,16 @@ namespace OrderService.Controllers
 
         // POST api/<OrderController>
         [HttpPost]
-        public void Post([FromBody] OrderDetail orderDetail)
+        public async Task Post([FromBody] OrderDetail orderDetail)
         {
             //Order insert to db    
-            publisher.Publish(JsonConvert.SerializeObject(orderDetail), "report.order", null);
+            var id = await orderCreator.Create(orderDetail);
+            publisher.Publish(JsonConvert.SerializeObject(new 
+            {
+                OrderId = id,
+                ProductId = orderDetail.ProductId,
+                Quantity = orderDetail.Quantity
+            }), "order.created", null);
         }
 
         // PUT api/<OrderController>/5

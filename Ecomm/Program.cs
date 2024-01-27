@@ -4,13 +4,23 @@ using RabbitMQ.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Build a config object, using env vars and JSON providers.
+IConfigurationRoot config = new ConfigurationBuilder()
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
+    .Build();
+
+string connectionString = config.GetConnectionString("DefaultConnection")!;
+
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddSingleton<IProductProvider>(new ProductProvider(""));
+builder.Services.AddSingleton<IProductProvider>(new ProductProvider(connectionString));
+builder.Services.AddSingleton<IInventoryUpdator>(new InventoryUpdator(connectionString));
 
 builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider(builder.Configuration.GetValue<string>("RabbitMQ:Url")));
-builder.Services.AddScoped<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(), "report_exchange", ExchangeType.Topic));
+builder.Services.AddScoped<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(), "inventory_exchange", ExchangeType.Topic));
+builder.Services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(), "order_exchange", "order_response", "order.created",  ExchangeType.Topic));
 
 builder.Services.AddSwaggerGen(c =>
 {

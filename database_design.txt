@@ -1,0 +1,18 @@
+User 
+	Id 
+	Name
+	
+Product
+	Id
+	Name
+	Description
+
+Order
+	Id
+	UserId
+	
+OrderDetail
+	OrderId
+	ProductId
+	Quantity
+	
