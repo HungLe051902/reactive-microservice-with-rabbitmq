@@ -1,17 +1,18 @@
 ﻿
 using Ecomm.DataAccess;
+using Ecomm.Models;
 using Newtonsoft.Json;
 using Plain.RabbitMQ;
 
 namespace Ecomm
 {
-    public class ProductCreatedListener : IHostedService
+    public class OrderCreatedListener : IHostedService
     {
         private readonly IPublisher publisher;
         private readonly ISubscriber subscriber;
         private readonly IInventoryUpdator inventoryUpdator;
 
-        public ProductCreatedListener(IPublisher publisher, ISubscriber subscriber, IInventoryUpdator inventoryUpdator)
+        public OrderCreatedListener(IPublisher publisher, ISubscriber subscriber, IInventoryUpdator inventoryUpdator)
         {
             this.publisher = publisher;
             this.subscriber = subscriber;
@@ -27,9 +28,14 @@ namespace Ecomm
         private bool Subscribe(string message, IDictionary<string, object> header)
         {
             var response = JsonConvert.DeserializeObject<OrderRequest>(message);
-            if (!response!.IsSuccess)
+            try
             {
-                orderDeletor.Delete(response.OrderId).GetAwaiter().GetResult();
+                inventoryUpdator.Update(response!.ProductId, response.Quantity).GetAwaiter().GetResult();
+                publisher.Publish(JsonConvert.SerializeObject(new InventoryResponse { OrderId = response.OrderId, IsSuccess = true }), "inventory.response", null);
+            }
+            catch (Exception)
+            {
+                publisher.Publish(JsonConvert.SerializeObject(new InventoryResponse { OrderId = response!.OrderId, IsSuccess = false }), "inventory.response", null);
             }
             return true;
         }
@@ -38,12 +44,5 @@ namespace Ecomm
         {
             return Task.CompletedTask;
         }
-    }
-
-    public class OrderRequest
-    {
-        public int OrderId { get; set; }
-        public int Quantity { get; set; }
-        public int ProductId { get; set; }
     }
 }

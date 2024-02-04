@@ -1,3 +1,4 @@
+using Ecomm;
 using Ecomm.DataAccess;
 using Plain.RabbitMQ;
 using RabbitMQ.Client;
@@ -21,6 +22,8 @@ builder.Services.AddSingleton<IInventoryUpdator>(new InventoryUpdator(connection
 builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider(builder.Configuration.GetValue<string>("RabbitMQ:Url")));
 builder.Services.AddScoped<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(), "inventory_exchange", ExchangeType.Topic));
 builder.Services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(), "order_exchange", "order_response", "order.created",  ExchangeType.Topic));
+
+builder.Services.AddHostedService<OrderCreatedListener>();
 
 builder.Services.AddSwaggerGen(c =>
 {

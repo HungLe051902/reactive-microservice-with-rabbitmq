@@ -41,6 +41,7 @@ builder.Services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<ICon
     "inventory_response",
     "inventory.response",
     ExchangeType.Topic));
+builder.Services.AddHostedService<InventoryResponseListener>();
 
 var app = builder.Build();
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Ecomm.Models;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using OrderService.Models;
 using OrderService.Services.Interfaces;
@@ -42,7 +43,7 @@ namespace OrderService.Controllers
         {
             //Order insert to db    
             var id = await orderCreator.Create(orderDetail);
-            publisher.Publish(JsonConvert.SerializeObject(new 
+            publisher.Publish(JsonConvert.SerializeObject(new OrderRequest
             {
                 OrderId = id,
                 ProductId = orderDetail.ProductId,

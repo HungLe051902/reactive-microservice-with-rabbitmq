@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Ecomm.Models;
+using Newtonsoft.Json;
 using Plain.RabbitMQ;
 
 namespace OrderService
@@ -34,11 +35,5 @@ namespace OrderService
         {
             return Task.CompletedTask;
         }
-    }
-
-    public class InventoryResponse
-    {
-        public int OrderId { get; set; }
-        public bool IsSuccess { get; set; }
     }
 }
