@@ -20,7 +20,7 @@ builder.Services.AddSingleton<IProductProvider>(new ProductProvider(connectionSt
 builder.Services.AddSingleton<IInventoryUpdator>(new InventoryUpdator(connectionString));
 
 builder.Services.AddSingleton<IConnectionProvider>(new ConnectionProvider(builder.Configuration.GetValue<string>("RabbitMQ:Url")));
-builder.Services.AddScoped<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(), "inventory_exchange", ExchangeType.Topic));
+builder.Services.AddSingleton<IPublisher>(x => new Publisher(x.GetService<IConnectionProvider>(), "inventory_exchange", ExchangeType.Topic));
 builder.Services.AddSingleton<ISubscriber>(x => new Subscriber(x.GetService<IConnectionProvider>(), "order_exchange", "order_response", "order.created",  ExchangeType.Topic));
 
 builder.Services.AddHostedService<OrderCreatedListener>();

@@ -15,7 +15,7 @@ namespace Ecomm.DataAccess
         public async Task Update(int productId, int quantity)
         {
             using var connection = new SqlConnection(connectionString);
-            await connection.ExecuteAsync("UPDATE_INVENTORY", new { productId, quantity }, commandType: System.Data.CommandType.StoredProcedure);
+            await connection.ExecuteAsync("UPDATE_INVENTORY1", new { productId, quantity });
         }
     }
 }

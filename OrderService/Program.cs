@@ -12,7 +12,7 @@ IConfigurationRoot config = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
-string connectionString = config.GetConnectionString("DefaultConnection")!;
+string connectionString = builder.Configuration.GetConnectionString("DefaultConnection")!;
 
 // Add services to the container.
 
